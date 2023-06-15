@@ -1,0 +1,2 @@
+[crate_roots]
+token_remover = "src"
