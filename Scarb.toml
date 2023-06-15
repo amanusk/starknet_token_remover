@@ -17,4 +17,3 @@ starknet = ">=1.1.0"
 # foo = { path = "vendor/foo" }
 
 [scripts]
-test = "cairo-test --starknet ."
