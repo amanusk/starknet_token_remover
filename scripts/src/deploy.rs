@@ -49,7 +49,7 @@ pub async fn deploy() -> Result<()> {
 
     let contract_factory = ContractFactory::new(class_hash, account);
     let result = contract_factory
-        .deploy(&vec![], felt!("1122"), false)
+        .deploy(&vec![], felt!("1123"), false)
         .send()
         .await
         .expect("Unable to deploy contract");

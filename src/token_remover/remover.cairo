@@ -18,14 +18,15 @@ struct Movable {
     amount: u256,
 }
 
-#[abi]
-trait ITokenRemover {
-    fn set_destination(destination: ContractAddress) -> ();
-    fn get_destination(source: ContractAddress) -> ContractAddress;
-    fn move_all(array_to_move: Array<Movable>) -> ();
+#[starknet::interface]
+trait ITokenRemover<TContractState> {
+    fn set_destination(ref self: TContractState, destination: ContractAddress) -> ();
+
+    fn get_destination(self: @TContractState, source: ContractAddress) -> ContractAddress;
+    fn move_all(self: @TContractState, array_to_move: Array<Movable>) -> ();
 }
 
-#[contract]
+#[starknet::contract]
 mod TokenRemover {
     use starknet::get_caller_address;
     use starknet::contract_address_const;
@@ -44,55 +45,66 @@ mod TokenRemover {
     use token_remover::erc20::erc20::IERC20Dispatcher;
     use token_remover::erc20::erc20::IERC20DispatcherTrait;
 
+    #[storage]
     struct Storage {
         destinations: LegacyMap::<ContractAddress, ContractAddress>, 
     }
 
 
     #[event]
-    fn DestinationSet(source: ContractAddress, dest: ContractAddress) {}
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        DestinationSet: DestinationSet, 
+    }
+    #[derive(Drop, starknet::Event)]
+    struct DestinationSet {
+        source: ContractAddress,
+        dest: ContractAddress,
+    }
 
 
     #[constructor]
-    fn constructor() {}
+    fn constructor(ref self: ContractState, ) {}
 
-    #[view]
-    fn get_destination(source: ContractAddress) -> ContractAddress {
-        let caller = get_caller_address();
-        let caller_felt: felt252 = caller.into();
+    #[external(v0)]
+    impl TokenRemover of super::ITokenRemover<ContractState> {
+        fn get_destination(self: @ContractState, source: ContractAddress) -> ContractAddress {
+            let caller = get_caller_address();
+            let caller_felt: felt252 = caller.into();
 
-        let dest = destinations::read(source);
-        let dest_felt: felt252 = dest.into();
-        dest
-    }
+            let dest = self.destinations.read(source);
+            let dest_felt: felt252 = dest.into();
+            dest
+        }
 
-    #[external]
-    fn set_destination(destination: ContractAddress) {
-        let caller = get_caller_address();
-        destinations::write(caller, destination);
-        let dest_felt: felt252 = destination.into();
-        DestinationSet(caller, destination);
-    }
+        fn set_destination(ref self: ContractState, destination: ContractAddress) {
+            let caller = get_caller_address();
+            self.destinations.write(caller, destination);
+            let dest_felt: felt252 = destination.into();
+            self.emit(Event::DestinationSet(DestinationSet { source: caller, dest: destination }));
+        }
 
-    #[external]
-    fn move_all(array_to_move: Array<Movable>) {
-        let caller = get_caller_address();
-        let mut index = 0;
-        loop {
-            if index == array_to_move.len() {
-                break ();
+        fn move_all(self: @ContractState, array_to_move: Array<Movable>) {
+            let caller = get_caller_address();
+            let mut index = 0;
+            loop {
+                if index == array_to_move.len() {
+                    break ();
+                }
+                let erc20 = IERC20Dispatcher {
+                    contract_address: *array_to_move.at(index).token_address
+                };
+                // TODO: handle transferFrom
+                // TODO: handle no destination set
+                // TODO: handle no allowance
+                // TODO: handle no balance
+                // TODO: gracefully fail on error
+                erc20
+                    .transfer_from(
+                        caller, self.destinations.read(caller), *array_to_move.at(index).amount
+                    );
+                index += 1;
             }
-            let erc20 = IERC20Dispatcher {
-                contract_address: *array_to_move.at(index).token_address
-            };
-            // TODO: handle transferFrom
-            // TODO: handle no destination set
-            // TODO: handle no allowance
-            // TODO: handle no balance
-            // TODO: gracefully fail on error
-            erc20
-                .transfer_from(caller, destinations::read(caller), *array_to_move.at(index).amount);
-            index += 1;
         }
     }
 }

@@ -29,8 +29,6 @@ use debug::PrintTrait;
 
 const NAME: felt252 = 111;
 const SYMBOL: felt252 = 222;
-
-
 fn setup() -> (ContractAddress, IERC20Dispatcher, ITokenRemoverDispatcher) {
     let account: ContractAddress = contract_address_const::<0xDEADBEAF>();
     set_caller_address(account);
@@ -41,8 +39,9 @@ fn setup() -> (ContractAddress, IERC20Dispatcher, ITokenRemoverDispatcher) {
     let mut calldata = ArrayTrait::<felt252>::new();
     calldata.append(NAME);
     calldata.append(SYMBOL);
-    calldata.append(initial_supply.high.into());
+    calldata.append(18);
     calldata.append(initial_supply.low.into());
+    calldata.append(initial_supply.high.into());
     calldata.append(account.into());
 
     let (erc20_address, _) = deploy_syscall(
@@ -65,21 +64,21 @@ fn setup() -> (ContractAddress, IERC20Dispatcher, ITokenRemoverDispatcher) {
 #[test]
 #[available_gas(10000000)]
 fn test_constructor() {
-    TokenRemover::constructor();
+    let (_, _, _) = setup();
 }
-
 #[test]
 #[available_gas(1000000)]
 fn test_set_destination() {
+    let (account, erc20, token_remover) = setup();
+    let amount: u256 = 1.into();
     let account: ContractAddress = contract_address_const::<0xDEADBEAF>();
     let dest: ContractAddress = contract_address_const::<0xDECD>();
 
     // let (account, erc20, token_remover) = setup();
-    set_caller_address(account);
+    set_contract_address(account);
 
-    TokenRemover::constructor();
-    TokenRemover::set_destination(dest);
-    let stored_dest = TokenRemover::get_destination(account);
+    token_remover.set_destination(dest);
+    let stored_dest = token_remover.get_destination(account);
     assert(stored_dest == dest, 'Dest not stored');
 }
 
