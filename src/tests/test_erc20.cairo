@@ -5,19 +5,14 @@ mod erc20_test {
     use token_remover::tests::mock_erc20::MockERC20;
     use token_remover::erc20::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
 
-    use starknet::contract_address_const;
-    use starknet::get_block_info;
-    use starknet::ContractAddress;
-    use starknet::Felt252TryIntoContractAddress;
-    use starknet::SyscallResultTrait;
-    use starknet::TryInto;
-    use starknet::Into;
+    use starknet::{
+        contract_address_const, get_block_info, ContractAddress, Felt252TryIntoContractAddress,
+        TryInto, Into, OptionTrait, class_hash::Felt252TryIntoClassHash
+    };
 
-    use core::result::ResultTrait;
-    use starknet::syscalls::{deploy_syscall, get_block_hash_syscall};
+    use starknet::syscalls::deploy_syscall;
     use array::ArrayTrait;
-    use option::OptionTrait;
-    use starknet::class_hash::Felt252TryIntoClassHash;
+    use result::ResultTrait;
     use serde::Serde;
 
     use box::BoxTrait;

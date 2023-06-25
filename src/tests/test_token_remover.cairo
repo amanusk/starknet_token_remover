@@ -1,26 +1,18 @@
 #[cfg(test)]
 mod token_remover_test {
-    use token_remover::token_remover::remover::TokenRemover;
-    use token_remover::token_remover::remover::ITokenRemoverDispatcher;
-    use token_remover::token_remover::remover::ITokenRemoverDispatcherTrait;
-    use token_remover::token_remover::remover::Movable;
+    use token_remover::token_remover::remover::{
+        TokenRemover, ITokenRemoverDispatcher, ITokenRemoverDispatcherTrait, Movable
+    };
 
     use token_remover::tests::mock_erc20::MockERC20;
-    use token_remover::erc20::erc20::IERC20Dispatcher;
-    use token_remover::erc20::erc20::IERC20DispatcherTrait;
+    use token_remover::erc20::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
 
-    use starknet::testing::set_caller_address;
-    use starknet::testing::set_contract_address;
-    use starknet::testing::set_block_timestamp;
+    use starknet::testing::{set_caller_address, set_contract_address, set_block_timestamp};
 
-    use starknet::contract_address_const;
-    use starknet::get_block_info;
-    use starknet::ContractAddress;
-    use starknet::Felt252TryIntoContractAddress;
-    use starknet::TryInto;
-    use starknet::Into;
-    use starknet::OptionTrait;
-    use starknet::class_hash::Felt252TryIntoClassHash;
+    use starknet::{
+        contract_address_const, get_block_info, ContractAddress, Felt252TryIntoContractAddress,
+        TryInto, Into, OptionTrait, class_hash::Felt252TryIntoClassHash
+    };
 
     use starknet::syscalls::deploy_syscall;
     use array::ArrayTrait;
