@@ -1,16 +1,10 @@
-use starknet::get_caller_address;
-use starknet::contract_address_const;
-use starknet::ContractAddress;
-use starknet::Into;
+use starknet::{get_caller_address, contract_address_const, ContractAddress, Into};
+use array::{ArrayTrait, SpanTrait};
 
 use zeroable::Zeroable;
-use array::ArrayTrait;
-use array::SpanTrait;
 use debug::PrintTrait;
 
-use token_remover::erc20::erc20::IERC20;
-use token_remover::erc20::erc20::IERC20Dispatcher;
-use token_remover::erc20::erc20::IERC20DispatcherTrait;
+use token_remover::erc20::erc20::{IERC20, IERC20Dispatcher, IERC20DispatcherTrait};
 
 #[derive(Drop, Serde, Copy)]
 struct Movable {
