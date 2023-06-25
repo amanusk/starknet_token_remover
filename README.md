@@ -2,7 +2,7 @@
 
 WIP example of a quite simple utility contract for Starknet
 
-This repo requires `Scarb 0.4.0`
+This repo requires `Scarb 0.5.0-alpha2`
 
 ## How does it work
 
@@ -19,7 +19,7 @@ scarb build
 ## Testing
 
 ```
-scarb cairo-test
+scarb test
 ```
 
 ## Running the scripts
