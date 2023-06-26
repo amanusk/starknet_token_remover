@@ -43,11 +43,7 @@ pub async fn declare() -> Result<()> {
     let compiled_class_hash = casm_artifact.class_hash().unwrap();
 
     let signer = LocalWallet::from(SigningKey::from_secret_scalar(
-        // FieldElement::from_hex_be(envfile.get("PRIVATE_KEY").unwrap()).unwrap(),
-        FieldElement::from_hex_be(
-            "0x538242139c560964eb32c8023faee83fd959d40f5593562fa49df6244075e13",
-        )
-        .unwrap(),
+        FieldElement::from_hex_be(envfile.get("PRIVATE_KEY").unwrap()).unwrap(),
     ));
     // let address = FieldElement::from_hex_be(envfile.get("ACCOUNT_ADDRESS").unwrap()).unwrap();
     let address = FieldElement::from_hex_be(
